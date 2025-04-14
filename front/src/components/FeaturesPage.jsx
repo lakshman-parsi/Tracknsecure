@@ -7,7 +7,7 @@ import {
   FaBell,
   FaRoute,
 } from "react-icons/fa";
-import { MdOutlineFeedback, MdOutlineLiveTv } from "react-icons/md";
+import { MdOutlineFeedback } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { FaMapLocationDot } from "react-icons/fa6";
 
@@ -26,8 +26,7 @@ const Features = [
   },
   {
     title: "Safety Premise Suggestions",
-    description:
-      "Get recommendations for safe premises based on community inputs.",
+    description: "Get recommendations for safe premises based on community inputs.",
     icon: <FaShieldAlt className="text-pink-600 text-4xl" />,
     url: "safe-places",
   },
@@ -37,18 +36,15 @@ const Features = [
     icon: <FaMapMarkerAlt className="text-pink-600 text-4xl" />,
     url: "risk-areas",
   },
-
   {
     title: "User Interaction and Feedback",
-    description:
-      "Share your experiences and provide feedback to help others stay safe.",
+    description: "Share your experiences and provide feedback to help others stay safe.",
     icon: <MdOutlineFeedback className="text-pink-600 text-4xl" />,
     url: "feedback",
   },
   {
     title: "Community Sharing",
-    description:
-      "Connect with the community to share safety tips and real-time updates.",
+    description: "Connect with the community to share safety tips and real-time updates.",
     icon: <FaUsers className="text-pink-600 text-4xl" />,
     url: "report",
   },
@@ -62,50 +58,42 @@ const Features = [
 
 const FeaturesPage = () => {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
-      {/* Header */}
-      <header className="w-full bg-white p-4 shadow-md text-center">
-        <h1 className="text-3xl font-bold text-pink-600">Our Features</h1>
-        <p className="text-gray-600 mt-2">
+    <div
+      className="w-full min-h-screen flex flex-col items-center justify-start p-0 m-0"
+      style={{
+        backgroundColor: "#FFE4EC", // Solid consistent background for the entire page
+      }}
+    >
+      {/* Title */}
+      <div className="w-full text-center py-4 mt-0">
+        <h1 className="text-4xl font-extrabold text-pink-700">Our Features</h1>
+        <p className="text-gray-700 text-md mt-2">
           Making your journeys safer, together.
         </p>
-      </header>
+      </div>
 
-      {/* Features Section */}
-      <section className="container mx-auto mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4 pb-10 max-w-6xl w-full">
         {Features.map((feature, index) => (
-          <Link to={`/${feature.url}`}>
+          <Link to={`/${feature.url}`} key={index}>
             <motion.div
-              key={index}
-              className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl flex flex-col items-center text-center"
-              initial={{ opacity: 0, y: 50 }}
+              className="bg-white border border-gray-200 rounded-xl p-6 shadow-md hover:shadow-lg transition duration-300 text-center"
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.2, duration: 0.6 }}
+              transition={{ delay: index * 0.1 }}
               whileHover={{ scale: 1.05 }}
             >
-              <div className="mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-gray-800">
+              <div className="mb-3">{feature.icon}</div>
+              <h3 className="text-lg font-semibold text-gray-800">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 mt-2">{feature.description}</p>
+              <p className="text-sm text-gray-600 mt-2">
+                {feature.description}
+              </p>
             </motion.div>
           </Link>
         ))}
-      </section>
-
-      {/* Call to Action */}
-      <motion.div
-        className="mt-12 bg-pink-500 text-white py-4 px-8 rounded-lg shadow-lg hover:shadow-xl text-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        whileHover={{ scale: 1.1 }}
-      >
-        <h2 className="text-xl font-bold">Start Your Safer Journey Today!</h2>
-        <p className="mt-2">
-          Join our community and make safety your priority.
-        </p>
-      </motion.div>
+      </div>
     </div>
   );
 };

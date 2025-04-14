@@ -2,12 +2,31 @@ import React from "react";
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white p-4 shadow-md">
-        <div className="text-xl font-bold text-pink-600">SHE SECURE</div>
-      </header>
+    <div
+      className="w-full min-h-screen flex flex-col items-center justify-start p-0 m-0"
+      style={{
+        backgroundColor: "#FFE4EC", // Page background
+      }}
+    >
+      {/* Navbar */}
+      <nav
+        className="w-full p-4 shadow-md fixed top-0 left-0 z-50"
+        style={{ backgroundColor: "#FFB6C1" }} // Slightly darker navbar
+      >
+        <div className="flex items-center justify-center text-xl font-bold text-white">
+          {/* Logo */}
+          <img
+            src="/walk.jpeg"
+            alt="Safe Journey"
+            className="w-10 h-10 rounded-full mr-2"
+          />
+          {/* Title */}
+          <div className="text-lg">TRACK N SECURE</div>
+        </div>
+      </nav>
 
-      <div className="container mx-auto mt-8 p-4 bg-white rounded-lg shadow-lg">
+      {/* About Section */}
+      <div className="container mx-auto mt-20 p-4 bg-white rounded-lg shadow-lg">
         <h2 className="text-3xl text-gray-800 font-semibold mb-4">About Us</h2>
         <p className="text-lg text-gray-700 mb-4">
           SHESECURE is a safety and security application designed to provide
@@ -31,6 +50,7 @@ const About = () => {
         </p>
       </div>
 
+      {/* Contact Section */}
       <div className="container mx-auto mt-8 p-4 bg-white rounded-lg shadow-lg">
         <h3 className="text-2xl text-gray-800 font-semibold mb-4">
           Contact Us

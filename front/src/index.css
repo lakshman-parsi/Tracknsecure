@@ -2,5 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* index.css or tailwind.css */
+
+
+/* index.css */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: transparent; 
+  height: 100%;
+}
+
+
+
+
 
 

@@ -1,12 +1,11 @@
 import "./App.css";
 import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import Allapi from "./common";
 import SOS from "./components/sos";
-import Indication from "./components/Indication";
+// import Indication from "./components/Indication";
 
 function App() {
   const fetchuserdetails = async () => {
@@ -17,7 +16,6 @@ function App() {
       });
 
       if (!response.ok) {
-        // Handle non-2xx HTTP responses
         console.error("HTTP error", response.status, response.statusText);
         return;
       }
@@ -34,22 +32,23 @@ function App() {
       console.error("Fetch error:", error);
     }
   };
+
   useEffect(() => {
     fetchuserdetails();
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-br from-[#fcd1d1] via-[#e2d4f7] to-[#f5e6ff]">
       <ToastContainer />
       <main className="min-h-[calc(100vh-90px)] pt-16">
         <Outlet />
-        <div className="">
+        <div>
           {/* <Indication /> */}
           <SOS />
         </div>
       </main>
       <ToastContainer />
-    </>
+    </div>
   );
 }
 

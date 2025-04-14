@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { FaEyeSlash, FaEye, FaUserCircle } from "react-icons/fa";
-import axios from "axios"; // Import axios
+import { FaEyeSlash, FaEye } from "react-icons/fa";
+import axios from "axios";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -17,84 +17,38 @@ const Signup = () => {
     address: "",
     age: "",
     phone: "",
-    contacts: ["", "", ""], // Minimum 3, up to 5
+    contacts: ["", "", ""],
   });
 
-  // Update state for form fields
   function onchangefhandle(e) {
     const { name, value } = e.target;
     fsetdata({ ...fdata, [name]: value });
   }
 
-  // Update contact numbers array
   function onchangeContactHandle(index, value) {
     const updatedContacts = [...fdata.contacts];
     updatedContacts[index] = value;
     fsetdata({ ...fdata, contacts: updatedContacts });
   }
 
-  // Submit handler
   async function onhandlefsubmit(e) {
     e.preventDefault();
 
-    // Validate name
-    if (!fdata.name.trim()) {
-      toast.error("Name is required");
-      return;
-    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{10}$/;
 
-    // Validate email format
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(fdata.email)) {
-      toast.error("Please enter a valid email address");
-      return;
+    if (!fdata.name.trim()) return toast.error("Name is required");
+    if (!emailRegex.test(fdata.email)) return toast.error("Invalid email");
+    if (fdata.password !== fdata.confirmpassword) return toast.error("Passwords don't match");
+    if (fdata.password.length < 8) return toast.error("Password too short");
+    if (!phoneRegex.test(fdata.phone)) return toast.error("Invalid phone number");
+    if (fdata.contacts.length < 3 || fdata.contacts.some((num) => !phoneRegex.test(num))) {
+      return toast.error("Provide at least 3 valid contact numbers");
     }
-
-    // Validate password and confirm password match
-    if (fdata.password !== fdata.confirmpassword) {
-      toast.error("Password and its confirmation mismatch");
-      return;
-    }
-
-    // Validate password strength (e.g., minimum 8 characters)
-    if (fdata.password.length < 8) {
-      console.log("error is Password must be at least 8 characters long");
-      toast.error("Password must be at least 8 characters long");
-      return;
-    }
-
-    // Validate phone number
-    const phoneRegex = /^[0-9]{10}$/; // Assuming 10-digit phone number
-    if (!phoneRegex.test(fdata.phone)) {
-      toast.error("Please enter a valid phone number (10 digits)");
-      return;
-    }
-
-    // Validate contacts array (at least 3 valid contacts)
-    if (
-      fdata.contacts.length < 3 ||
-      fdata.contacts.some((num) => !phoneRegex.test(num))
-    ) {
-      toast.error(
-        "Please provide at least 3 valid contact numbers (10 digits each)"
-      );
-      return;
-    }
-
-    // Validate address
-    if (!fdata.address.trim()) {
-      toast.error("Address is required");
-      return;
-    }
-
-    // Validate age (should be 18 or older)
-    if (parseInt(fdata.age) < 18) {
-      toast.error("You must be at least 18 years old");
-      return;
-    }
+    if (!fdata.address.trim()) return toast.error("Address is required");
+    if (parseInt(fdata.age) < 18) return toast.error("Must be 18 or older");
 
     try {
-      // API call to Django backend
       const response = await axios.post("http://127.0.0.1:8000/api/register/", {
         username: fdata.name,
         email: fdata.email,
@@ -108,185 +62,169 @@ const Signup = () => {
 
       if (response.status === 201) {
         toast.success("Signup successful!");
-        navigate("/login"); // Redirect to login page
+        navigate("/login");
       } else {
-        toast.error("Signup failed. Please try again.");
+        toast.error("Signup failed. Try again.");
       }
     } catch (error) {
-      console.error("Error during signup:", error);
-      toast.error("An error occurred. Please check your inputs.");
+      console.error("Signup error:", error);
+      toast.error("An error occurred. Check inputs.");
     }
   }
 
   return (
-    <>
-      <div className="container max-w-[500px] mx-auto min-h-[800px] my-11 bg-gray-200 text-black rounded-[20px]">
-        <div className="font-bold text-center text-2xl text-black p-3">
-          SignUP
-        </div>
-        <div className="userimg text-7xl block w-fit mx-auto relative overflow-hidden">
-          <FaUserCircle />
-        </div>
-
-        <form className="login-form p-10" onSubmit={onhandlefsubmit}>
-          {/* Name */}
-          <label htmlFor="name" className="font-bold mx-auto text-xl">
-            Name
-          </label>
-          <input
-            type="text"
-            name="name"
-            value={fdata.name}
-            onChange={onchangefhandle}
-            required
-            className="outline-none my-4 w-full h-9 px-3 rounded"
-            placeholder="Enter your Name"
-          />
-
-          {/* Email */}
-          <label htmlFor="email" className="font-bold mx-auto text-xl">
-            Email
-          </label>
-          <input
-            type="email"
-            name="email"
-            value={fdata.email}
-            onChange={onchangefhandle}
-            required
-            className="outline-none my-4 w-full h-9 px-3 rounded"
-            placeholder="Enter your Email"
-          />
-
-          {/* Address */}
-          <label htmlFor="address" className="font-bold mx-auto text-xl">
-            Address
-          </label>
-          <textarea
-            name="address"
-            value={fdata.address}
-            onChange={onchangefhandle}
-            required
-            className="outline-none my-4 w-full px-3 h-20 rounded"
-            placeholder="Enter your Address"
-          ></textarea>
-
-          {/* Age */}
-          <label htmlFor="age" className="font-bold mx-auto text-xl">
-            Age
-          </label>
-          <input
-            type="number"
-            name="age"
-            value={fdata.age}
-            onChange={onchangefhandle}
-            required
-            min="18"
-            className="outline-none my-4 w-full h-9 px-3 rounded"
-            placeholder="Enter your Age"
-          />
-
-          {/* Phone */}
-          <label htmlFor="phone" className="font-bold mx-auto text-xl">
-            Phone
-          </label>
-          <input
-            type="tel"
-            name="phone"
-            value={fdata.phone}
-            onChange={onchangefhandle}
-            required
-            className="outline-none my-4 w-full h-9 px-3 rounded"
-            placeholder="Enter your Phone Number"
-          />
-
-          {/* Contacts (Additional Phone Numbers) */}
-          <label htmlFor="contacts" className="font-bold mx-auto text-xl">
-            Additional Contacts (Min 3, Max 5)
-          </label>
-          {fdata.contacts.map((contact, index) => (
+    <div className="min-h-screen w-full flex items-start justify-center px-4 pt-6 overflow-auto">
+      <div className="bg-white/30 backdrop-blur-md shadow-lg rounded-2xl px-8 py-10 w-full max-w-sm border border-white/40">
+        <h1 className="text-3xl font-extrabold text-center text-pink-700 mb-3 tracking-wide">
+          track N secure
+        </h1>
+        <p className="text-center text-gray-700 mb-6 text-sm">
+          TRACK THE THREAT SECURE THE JOURNEY
+        </p>
+        <h2 className="text-xl font-semibold text-center text-gray-800 mb-5">
+          Sign Up
+        </h2>
+        <form onSubmit={onhandlefsubmit}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <input
-              key={index}
+              type="text"
+              name="name"
+              value={fdata.name}
+              onChange={onchangefhandle}
+              required
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-pink-400"
+              placeholder="Enter your name"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={fdata.email}
+              onChange={onchangefhandle}
+              required
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-pink-400"
+              placeholder="Enter your email"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+            <textarea
+              name="address"
+              value={fdata.address}
+              onChange={onchangefhandle}
+              required
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-pink-400"
+              placeholder="Enter your address"
+            ></textarea>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
+            <input
+              type="number"
+              name="age"
+              value={fdata.age}
+              onChange={onchangefhandle}
+              required
+              min="18"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-pink-400"
+              placeholder="Enter your age"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+            <input
               type="tel"
-              value={contact}
-              onChange={(e) => onchangeContactHandle(index, e.target.value)}
-              required={index < 3} // First 3 are mandatory
-              className="outline-none my-2 w-full h-9 px-3 rounded"
-              placeholder={`Contact ${index + 1}`}
-            />
-          ))}
-          {fdata.contacts.length < 5 && (
-            <button
-              type="button"
-              onClick={() =>
-                fsetdata({
-                  ...fdata,
-                  contacts: [...fdata.contacts, ""],
-                })
-              }
-              className="text-blue-500 hover:underline"
-            >
-              Add More Contacts
-            </button>
-          )}
-
-          {/* Password */}
-          <label htmlFor="password" className="font-bold text-xl">
-            Password
-          </label>
-          <div className="inputpass flex items-center justify-between px-2 w-full h-9 my-4 bg-white rounded">
-            <input
-              type={istogg ? "text" : "password"}
-              name="password"
-              value={fdata.password}
+              name="phone"
+              value={fdata.phone}
               onChange={onchangefhandle}
               required
-              className="outline-none"
-              placeholder="Enter Your Password"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-pink-400"
+              placeholder="Enter your phone number"
             />
-            <div onClick={() => settogg(!istogg)}>
-              {istogg ? <FaEye /> : <FaEyeSlash />}
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Emergency Contacts
+            </label>
+            {fdata.contacts.map((contact, index) => (
+              <input
+                key={index}
+                type="tel"
+                value={contact}
+                onChange={(e) => onchangeContactHandle(index, e.target.value)}
+                required={index < 3}
+                placeholder={`Contact ${index + 1}`}
+                className="w-full px-4 py-2 mb-2 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-pink-400"
+              />
+            ))}
+            {fdata.contacts.length < 5 && (
+              <button
+                type="button"
+                onClick={() => fsetdata({ ...fdata, contacts: [...fdata.contacts, ""] })}
+                className="text-blue-600 text-sm hover:underline"
+              >
+                + Add More
+              </button>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <div className="flex items-center bg-white border border-gray-300 rounded-lg px-3">
+              <input
+                type={istogg ? "text" : "password"}
+                name="password"
+                value={fdata.password}
+                onChange={onchangefhandle}
+                required
+                placeholder="Enter your password"
+                className="w-full py-2 outline-none bg-transparent"
+              />
+              <div
+                className="cursor-pointer text-gray-600 hover:text-pink-500 transition"
+                onClick={() => settogg(!istogg)}
+              >
+                {istogg ? <FaEye /> : <FaEyeSlash />}
+              </div>
             </div>
           </div>
-
-          {/* Confirm Password */}
-          <label htmlFor="confirmpassword" className="font-bold text-xl">
-            Confirm Password
-          </label>
-          <div className="inputpass flex items-center justify-between px-2 w-full h-9 my-4 bg-white rounded">
-            <input
-              type={isctogg ? "text" : "password"}
-              name="confirmpassword"
-              value={fdata.confirmpassword}
-              onChange={onchangefhandle}
-              required
-              className="outline-none"
-              placeholder="Confirm Your Password"
-            />
-            <div onClick={() => setctogg(!isctogg)}>
-              {isctogg ? <FaEye /> : <FaEyeSlash />}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <div className="flex items-center bg-white border border-gray-300 rounded-lg px-3">
+              <input
+                type={isctogg ? "text" : "password"}
+                name="confirmpassword"
+                value={fdata.confirmpassword}
+                onChange={onchangefhandle}
+                required
+                placeholder="Confirm your password"
+                className="w-full py-2 outline-none bg-transparent"
+              />
+              <div
+                className="cursor-pointer text-gray-600 hover:text-pink-500 transition"
+                onClick={() => setctogg(!isctogg)}
+              >
+                {isctogg ? <FaEye /> : <FaEyeSlash />}
+              </div>
             </div>
           </div>
-
-          {/* Submit Button */}
-          <div className="loginbtn flex justify-center my-10">
-            <button
-              type="submit"
-              className="bg-blue-800 text-center px-5 py-2 rounded-[10px] text-white hover:bg-red-400 hover:text-black hover:scale-125 transition-all"
-            >
-              Sign UP
-            </button>
-          </div>
-
-          {/* Link to Login */}
-          <div className="lsignin text-center">
-            Already have an account?{" "}
-            <Link to="/login" className="text-red-400 font-bold">
-              Sign in
-            </Link>
-          </div>
+          <button
+            type="submit"
+            className="w-full bg-pink-600 text-white py-2 rounded-lg font-bold hover:bg-pink-700 transition-all"
+          >
+            Sign Up
+          </button>
         </form>
+        <div className="text-center mt-6 text-sm text-gray-700">
+          Already have an account?{' '}
+          <Link to="/login" className="text-blue-600 font-semibold hover:underline">
+            Login
+          </Link>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
